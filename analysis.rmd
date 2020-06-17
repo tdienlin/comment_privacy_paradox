@@ -1,0 +1,76 @@
+---
+title: Privacy Paradox Model
+author: Tobias Dienlin & Ye Sun
+ouput: html_document
+---
+
+```{r setup, echo=T, message=F, warning=F}
+library(haven); library(lavaan); library(lavaanPlot); library(magrittr); library(tidyverse)
+```
+
+# Data Wrangling
+
+We first load the data from Dienlin & Trepte (2015). 
+
+```{r}
+d <- read_spss("data.sav")
+```
+
+We build the following four mean-indices:
+
+- pri_con: Privacy Concerns
+- pri_att: Privacy Attitudes (analogous to privacy risk perception)
+- pri_int: Privacy Intentions
+- pri_beh: Privacy Behavior
+
+```{r}
+d %<>%
+  mutate(
+    pri_con = rowMeans(select(., starts_with("PB"))),
+    pri_att = rowMeans(select(., starts_with("IN_EIN"))),
+    pri_int = rowMeans(select(., starts_with("IN_INT"))),
+    pri_beh = rowMeans(select(., starts_with("IN_VEA")))
+  )
+```
+
+# Model Reported
+
+We then configure a model similar to the one reported by Yu et al. (2020).
+
+```{r}
+model <- "
+  pri_con ~~ pri_att
+  pri_int ~ pri_con + pri_att
+  pri_beh ~ pri_att + pri_int
+"
+fit_reported <- sem(model, d)
+```
+
+This model shows the following fit: 
+
+```{r}
+fitMeasures(fit_reported, c("chisq", "df", "pvalue", "cfi", "rmsea"))
+```
+
+Because one path is not included, in other words it is restricted to zero, model fit is slightly reduced.
+
+# Model Saturated
+
+We now fit a saturated model, which includes all paths.
+
+```{r}
+model <- "
+  pri_con ~~ pri_att
+  pri_int ~ pri_con + pri_att
+  pri_beh ~ pri_con + pri_att + pri_int
+"
+fit_saturated <- sem(model, d)
+```
+
+This model shows the following fit: 
+
+```{r}
+fitMeasures(fit_saturated, c("chisq", "df", "pvalue", "cfi", "rmsea"))
+```
+
+Because the model is saturated, there are no degrees of freedom, and RMSEA equals zero.
