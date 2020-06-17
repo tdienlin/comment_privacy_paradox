@@ -12,7 +12,7 @@
 <meta name="author" content="Tobias Dienlin &amp; Ye Sun" />
 
 
-<title>Privacy Paradox Model</title>
+<title>Response to Meta-Analysis on Privacy Concerns and Information Sharing</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -293,7 +293,8 @@ $(document).ready(function () {
 
 
 
-<h1 class="title toc-ignore">Privacy Paradox Model</h1>
+<h1 class="title toc-ignore">Response to Meta-Analysis on Privacy Concerns and Information Sharing</h1>
+<h3 class="subtitle">Supplementary Analyses</h3>
 <h4 class="author">Tobias Dienlin &amp; Ye Sun</h4>
 
 </div>
@@ -319,8 +320,8 @@ $(document).ready(function () {
     pri_beh = rowMeans(select(., starts_with(&quot;IN_VEA&quot;)))
   )</code></pre>
 </div>
-<div id="model-reported" class="section level1">
-<h1>Model Reported</h1>
+<div id="model-reported-in-paper" class="section level1">
+<h1>Model Reported in Paper</h1>
 <p>We then configure a model similar to the one reported by Yu et al. (2020).</p>
 <pre class="r"><code>model &lt;- &quot;
   pri_con ~~ pri_att
@@ -332,10 +333,10 @@ fit_reported &lt;- sem(model, d)</code></pre>
 <pre class="r"><code>fitMeasures(fit_reported, c(&quot;chisq&quot;, &quot;df&quot;, &quot;pvalue&quot;, &quot;cfi&quot;, &quot;rmsea&quot;))</code></pre>
 <pre><code>##  chisq     df pvalue    cfi  rmsea 
 ##  2.070  1.000  0.150  0.999  0.043</code></pre>
-<p>Because one path is not included, in other words it is restricted to zero, model fit is slightly reduced.</p>
+<p>Because one path (i.e., privacy concerns on privacy behavior) is not included (i.e., it is restricted to zero), model fit is slightly reduced.</p>
 </div>
-<div id="model-saturated" class="section level1">
-<h1>Model Saturated</h1>
+<div id="saturated-model" class="section level1">
+<h1>Saturated Model</h1>
 <p>We now fit a saturated model, which includes all paths.</p>
 <pre class="r"><code>model &lt;- &quot;
   pri_con ~~ pri_att
