@@ -12,7 +12,7 @@
 <meta name="author" content="Tobias Dienlin &amp; Ye Sun" />
 
 
-<title>Response to Meta-Analysis on Privacy Concerns and Information Sharing</title>
+<title>Response to Yu et al. (2020)</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -20,6 +20,9 @@
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
@@ -251,6 +254,69 @@ $(document).ready(function () {
 
 
 
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
 
 </head>
 
@@ -258,6 +324,16 @@ $(document).ready(function () {
 
 
 <div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
 
 
 
@@ -293,18 +369,19 @@ $(document).ready(function () {
 
 
 
-<h1 class="title toc-ignore">Response to Meta-Analysis on Privacy Concerns and Information Sharing</h1>
+<h1 class="title toc-ignore">Response to Yu et al. (2020)</h1>
 <h3 class="subtitle">Supplementary Analyses</h3>
 <h4 class="author">Tobias Dienlin &amp; Ye Sun</h4>
 
 </div>
 
 
-<p>In what follows, we reanalyse the study by Yu et al. (2020).</p>
+<p>In what follows, we reanalyze the study by Yu et al. (2020).</p>
 <div id="set-up" class="section level1">
 <h1>Set-up</h1>
 <p>We first recreate the covariance matrix reported by <span class="citation">Yu et al. (2020)</span>.</p>
-<pre class="r"><code>vars &lt;- c(&quot;pri_ris&quot;, &quot;pri_con&quot;, &quot;dis_int&quot;, &quot;dis_beh&quot;)
+<pre class="r"><code>options(width = 130) # 
+vars &lt;- c(&quot;pri_ris&quot;, &quot;pri_con&quot;, &quot;dis_int&quot;, &quot;dis_beh&quot;)
 cor_c &lt;- c(1, .62, -.203, -.165, 1, -.159, -.063, 1, .487, 1)
 cor_ma &lt;- lavaan::lav_matrix_vech_reverse(cor_c, diagonal = TRUE)
 colnames(cor_ma) &lt;- vars
@@ -334,7 +411,7 @@ n_hm</code></pre>
 &quot;
 fit_ideal &lt;- lavaan::sem(model_ideal, sample.cov = cor_ma, sample.nobs = n_hm)</code></pre>
 <p>We then extract the results.</p>
-<pre class="r"><code>lavaan::summary(fit_ideal, standardized = TRUE, header = FALSE)</code></pre>
+<pre class="r"><code>lavaan::summary(fit_ideal, standardized = TRUE, header = FALSE, ci = TRUE)</code></pre>
 <pre><code>## 
 ## Parameter Estimates:
 ## 
@@ -343,28 +420,28 @@ fit_ideal &lt;- lavaan::sem(model_ideal, sample.cov = cor_ma, sample.nobs = n_hm
 ##   Standard errors                             Standard
 ## 
 ## Regressions:
-##                    Estimate  Std.Err  z-value  P(&gt;|z|)   Std.lv  Std.all
-##   pri_ris ~                                                             
-##     pri_con    (a)    0.620    0.009   72.186    0.000    0.620    0.620
-##   dis_int ~                                                             
-##     pri_con    (b)   -0.054    0.014   -3.944    0.000   -0.054   -0.054
-##     pri_ris    (d)   -0.170    0.014  -12.428    0.000   -0.170   -0.170
-##   dis_beh ~                                                             
-##     pri_con    (c)    0.089    0.012    7.381    0.000    0.089    0.089
-##     pri_ris    (e)   -0.124    0.012  -10.132    0.000   -0.124   -0.124
-##     dis_int    (f)    0.476    0.010   49.019    0.000    0.476    0.476
+##                    Estimate  Std.Err  z-value  P(&gt;|z|) ci.lower ci.upper   Std.lv  Std.all
+##   pri_ris ~                                                                               
+##     pri_con    (a)    0.620    0.009   72.186    0.000    0.603    0.637    0.620    0.620
+##   dis_int ~                                                                               
+##     pri_con    (b)   -0.054    0.014   -3.944    0.000   -0.081   -0.027   -0.054   -0.054
+##     pri_ris    (d)   -0.170    0.014  -12.428    0.000   -0.196   -0.143   -0.170   -0.170
+##   dis_beh ~                                                                               
+##     pri_con    (c)    0.089    0.012    7.381    0.000    0.066    0.113    0.089    0.089
+##     pri_ris    (e)   -0.124    0.012  -10.132    0.000   -0.148   -0.100   -0.124   -0.124
+##     dis_int    (f)    0.476    0.010   49.019    0.000    0.457    0.495    0.476    0.476
 ## 
 ## Variances:
-##                    Estimate  Std.Err  z-value  P(&gt;|z|)   Std.lv  Std.all
-##    .pri_ris           0.616    0.010   64.595    0.000    0.616    0.616
-##    .dis_int           0.957    0.015   64.595    0.000    0.957    0.957
-##    .dis_beh           0.753    0.012   64.595    0.000    0.753    0.753
+##                    Estimate  Std.Err  z-value  P(&gt;|z|) ci.lower ci.upper   Std.lv  Std.all
+##    .pri_ris           0.616    0.010   64.595    0.000    0.597    0.634    0.616    0.616
+##    .dis_int           0.957    0.015   64.595    0.000    0.928    0.986    0.957    0.957
+##    .dis_beh           0.753    0.012   64.595    0.000    0.730    0.776    0.753    0.753
 ## 
 ## Defined Parameters:
-##                    Estimate  Std.Err  z-value  P(&gt;|z|)   Std.lv  Std.all
-##     indirect_ffcts   -0.152    0.009  -16.468    0.000   -0.152   -0.152
-##     direct_effect     0.089    0.012    7.381    0.000    0.089    0.089
-##     total_effect     -0.063    0.011   -5.767    0.000   -0.063   -0.063</code></pre>
+##                    Estimate  Std.Err  z-value  P(&gt;|z|) ci.lower ci.upper   Std.lv  Std.all
+##     indirect_ffcts   -0.152    0.009  -16.468    0.000   -0.171   -0.134   -0.152   -0.152
+##     direct_effect     0.089    0.012    7.381    0.000    0.066    0.113    0.089    0.089
+##     total_effect     -0.063    0.011   -5.767    0.000   -0.084   -0.042   -0.063   -0.063</code></pre>
 <p>The results show that the total effect equals the sum of the indirect effects and the direct effects. The total effect also equals the bivariate correlation reported above.</p>
 </div>
 <div id="model-reported-in-paper" class="section level1">
@@ -377,12 +454,10 @@ fit_ideal &lt;- lavaan::sem(model_ideal, sample.cov = cor_ma, sample.nobs = n_hm
 &quot;
 fit_reported &lt;- lavaan::sem(model_reported, sample.cov = cor_ma, sample.nobs = n_hm)</code></pre>
 <p>The model shows the following fit:</p>
-<pre class="r"><code>fit_indices &lt;- c(&quot;chisq&quot;, &quot;df&quot;, &quot;pvalue&quot;, &quot;cfi&quot;, &quot;nfi&quot;, &quot;rmsea&quot;, &quot;rmsea.ci.lower&quot;, &quot;rmsea.ci.upper&quot;, &quot;srmr&quot;)
+<pre class="r"><code>fit_indices &lt;- c(&quot;chisq&quot;, &quot;df&quot;, &quot;pvalue&quot;, &quot;cfi&quot;, &quot;nfi&quot;, &quot;rmsea&quot;, &quot;srmr&quot;)
 lavaan::fitMeasures(fit_reported, fit_indices)</code></pre>
-<pre><code>##          chisq             df         pvalue            cfi            nfi 
-##         54.307          1.000          0.000          0.992          0.992 
-##          rmsea rmsea.ci.lower rmsea.ci.upper           srmr 
-##          0.080          0.063          0.099          0.017</code></pre>
+<pre><code>##  chisq     df pvalue    cfi    nfi  rmsea   srmr 
+## 54.307  1.000  0.000  0.992  0.992  0.080  0.017</code></pre>
 <p>The results equal those reported in the paper (with the exception that in the paper RMSEA is falsely reported as .008, which seems to be a typo). Also note that there is one degree of freedom, because the path <code>pri_con</code> on <code>dis_beh</code> is not included.</p>
 <p>We then look at the results of the structural model.</p>
 <pre class="r"><code>lavaan::summary(fit_reported, standardized = TRUE, header = FALSE)</code></pre>
@@ -426,13 +501,11 @@ lavaan::fitMeasures(fit_reported, fit_indices)</code></pre>
 fit_saturated &lt;- lavaan::sem(model_saturated, sample.cov = cor_ma, sample.nobs = n_hm)</code></pre>
 <p>The model shows the following fit:</p>
 <pre class="r"><code>lavaan::fitMeasures(fit_saturated, fit_indices)</code></pre>
-<pre><code>##          chisq             df         pvalue            cfi            nfi 
-##              0              0             NA              1              1 
-##          rmsea rmsea.ci.lower rmsea.ci.upper           srmr 
-##              0              0              0              0</code></pre>
+<pre><code>##  chisq     df pvalue    cfi    nfi  rmsea   srmr 
+##      0      0     NA      1      1      0      0</code></pre>
 <p>Because the model is satured and we have no degrees of freedom, we now get “perfect” fit. The RMSEA equals 0, and not .368 as reported in the paper.</p>
 <p>We then look at the results of the structural model.</p>
-<pre class="r"><code>lavaan::summary(fit_saturated, standardized = TRUE, header = FALSE)</code></pre>
+<pre class="r"><code>lavaan::summary(fit_saturated, standardized = TRUE, header = FALSE, ci = TRUE)</code></pre>
 <pre><code>## 
 ## Parameter Estimates:
 ## 
@@ -441,26 +514,26 @@ fit_saturated &lt;- lavaan::sem(model_saturated, sample.cov = cor_ma, sample.nob
 ##   Standard errors                             Standard
 ## 
 ## Regressions:
-##                    Estimate  Std.Err  z-value  P(&gt;|z|)   Std.lv  Std.all
-##   dis_int ~                                                             
-##     pri_con          -0.054    0.014   -3.944    0.000   -0.054   -0.054
-##     pri_ris          -0.170    0.014  -12.428    0.000   -0.170   -0.170
-##   dis_beh ~                                                             
-##     pri_con           0.089    0.012    7.381    0.000    0.089    0.089
-##     pri_ris          -0.124    0.012  -10.132    0.000   -0.124   -0.124
-##     dis_int           0.476    0.010   49.019    0.000    0.476    0.476
+##                    Estimate  Std.Err  z-value  P(&gt;|z|) ci.lower ci.upper   Std.lv  Std.all
+##   dis_int ~                                                                               
+##     pri_con          -0.054    0.014   -3.944    0.000   -0.081   -0.027   -0.054   -0.054
+##     pri_ris          -0.170    0.014  -12.428    0.000   -0.196   -0.143   -0.170   -0.170
+##   dis_beh ~                                                                               
+##     pri_con           0.089    0.012    7.381    0.000    0.066    0.113    0.089    0.089
+##     pri_ris          -0.124    0.012  -10.132    0.000   -0.148   -0.100   -0.124   -0.124
+##     dis_int           0.476    0.010   49.019    0.000    0.457    0.495    0.476    0.476
 ## 
 ## Covariances:
-##                    Estimate  Std.Err  z-value  P(&gt;|z|)   Std.lv  Std.all
-##   pri_con ~~                                                            
-##     pri_ris           0.620    0.013   48.136    0.000    0.620    0.620
+##                    Estimate  Std.Err  z-value  P(&gt;|z|) ci.lower ci.upper   Std.lv  Std.all
+##   pri_con ~~                                                                              
+##     pri_ris           0.620    0.013   48.136    0.000    0.595    0.645    0.620    0.620
 ## 
 ## Variances:
-##                    Estimate  Std.Err  z-value  P(&gt;|z|)   Std.lv  Std.all
-##    .dis_int           0.957    0.015   64.595    0.000    0.957    0.957
-##    .dis_beh           0.753    0.012   64.595    0.000    0.753    0.753
-##     pri_con           1.000    0.015   64.595    0.000    1.000    1.000
-##     pri_ris           1.000    0.015   64.595    0.000    1.000    1.000</code></pre>
+##                    Estimate  Std.Err  z-value  P(&gt;|z|) ci.lower ci.upper   Std.lv  Std.all
+##    .dis_int           0.957    0.015   64.595    0.000    0.928    0.986    0.957    0.957
+##    .dis_beh           0.753    0.012   64.595    0.000    0.730    0.776    0.753    0.753
+##     pri_con           1.000    0.015   64.595    0.000    0.970    1.030    1.000    1.000
+##     pri_ris           1.000    0.015   64.595    0.000    0.970    1.030    1.000    1.000</code></pre>
 <p>We even find a <em>positive</em> relation between privacy concerns and disclosure behavior.</p>
 <p>However, this finding shouldn’t be surprising: Because privacy concern and privacy risks are strongly correlated (<em>r</em> = 0.62), we have a situation typical of <em>multicollinearity.</em> That is, if strongly correlated predictors are included in the same model, confidence intervals increase, and oftentimes signs reverse (as is the case here).</p>
 <p>This isn’t even necessary problematic, but reflects are more difficult to interpret model and less statistical power <span class="citation">(see Vanhove 2019)</span>.</p>
@@ -479,6 +552,8 @@ fit_saturated &lt;- lavaan::sem(model_saturated, sample.cov = cor_ma, sample.nob
 
 
 
+</div>
+</div>
 
 </div>
 
@@ -511,6 +586,32 @@ $(document).ready(function () {
 
 <!-- code folding -->
 
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
 
 <!-- dynamically load mathjax for compatibility with self-contained -->
 <script>
