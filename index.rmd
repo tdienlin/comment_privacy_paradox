@@ -6,7 +6,9 @@ ouput: html_document
 bibliography: bibliography.bib
 ---
 
-# Reanalysis of Yu et al. (2020)
+In what follows, we reanalyse the study by Yu et al. (2020).
+
+# Set-up
 
 We first recreate the covariance matrix reported by @yuMetaanalysisExplorePrivacy2020.
 
@@ -27,15 +29,41 @@ n_hm <- psych::harmonic.mean(n_c)
 n_hm
 ```
 
-We rebuild the model reported in the paper.
+# Ideal Model
+
+Referring to Problem 1, we first calculate our so-called `model_ideal`.
 
 ```{r}
-model <- "
+model_ideal <- "
+  pri_ris ~ a * pri_con 
+  dis_int ~ b * pri_con + d * pri_ris
+  dis_beh ~ c * pri_con + e * pri_ris + f * dis_int
+  indirect_effects := (a*d*f) + (a*e) + (b*f)
+  direct_effect := c
+  total_effect := indirect_effects + direct_effect
+"
+fit_ideal <- lavaan::sem(model_ideal, sample.cov = cor_ma, sample.nobs = n_hm)
+```
+
+We then extract the results.
+
+```{r}
+lavaan::summary(fit_ideal, standardized = TRUE, header = FALSE)
+```
+
+The results show that the total effect equals the sum of the indirect effects and the direct effects. The total effect also equals the bivariate correlation reported above.
+
+# Model Reported in Paper
+
+Referring to Problem 2, we rebuild the model reported in the paper, called `model_reported`.
+
+```{r}
+model_reported <- "
   pri_con ~~ pri_ris
   dis_int ~ pri_con + pri_ris
   dis_beh ~ pri_ris + dis_int
 "
-fit_reported <- lavaan::sem(model, sample.cov = cor_ma, sample.nobs = n_hm)
+fit_reported <- lavaan::sem(model_reported, sample.cov = cor_ma, sample.nobs = n_hm)
 ```
 
 The model shows the following fit: 
@@ -57,15 +85,15 @@ The results resemble exactly those reported in the paper.
 
 # Analysis of Saturated Model
 
-We now estimate the saturated model by adding `pri_con` as predictor for `dis_beh`. 
+We now estimate the saturated model (`model_saturated`) by adding `pri_con` as predictor for `dis_beh`. 
 
 ```{r}
-model <- "
+model_saturated <- "
   pri_con ~~ pri_ris
   dis_int ~ pri_con + pri_ris
   dis_beh ~ pri_con + pri_ris + dis_int
 "
-fit_saturated <- lavaan::sem(model, sample.cov = cor_ma, sample.nobs = n_hm)
+fit_saturated <- lavaan::sem(model_saturated, sample.cov = cor_ma, sample.nobs = n_hm)
 ```
 
 The model shows the following fit: 

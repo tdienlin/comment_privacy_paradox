@@ -300,8 +300,9 @@ $(document).ready(function () {
 </div>
 
 
-<div id="reanalysis-of-yu-et-al.-2020" class="section level1">
-<h1>Reanalysis of Yu et al. (2020)</h1>
+<p>In what follows, we reanalyse the study by Yu et al. (2020).</p>
+<div id="set-up" class="section level1">
+<h1>Set-up</h1>
 <p>We first recreate the covariance matrix reported by <span class="citation">Yu et al. (2020)</span>.</p>
 <pre class="r"><code>vars &lt;- c(&quot;pri_ris&quot;, &quot;pri_con&quot;, &quot;dis_int&quot;, &quot;dis_beh&quot;)
 cor_c &lt;- c(1, .62, -.203, -.165, 1, -.159, -.063, 1, .487, 1)
@@ -319,13 +320,62 @@ cor_ma</code></pre>
 n_hm &lt;- psych::harmonic.mean(n_c)
 n_hm</code></pre>
 <pre><code>## [1] 8345.094</code></pre>
-<p>We rebuild the model reported in the paper.</p>
-<pre class="r"><code>model &lt;- &quot;
+</div>
+<div id="ideal-model" class="section level1">
+<h1>Ideal Model</h1>
+<p>Referring to Problem 1, we first calculate our so-called <code>model_ideal</code>.</p>
+<pre class="r"><code>model_ideal &lt;- &quot;
+  pri_ris ~ a * pri_con 
+  dis_int ~ b * pri_con + d * pri_ris
+  dis_beh ~ c * pri_con + e * pri_ris + f * dis_int
+  indirect_effects := (a*d*f) + (a*e) + (b*f)
+  direct_effect := c
+  total_effect := indirect_effects + direct_effect
+&quot;
+fit_ideal &lt;- lavaan::sem(model_ideal, sample.cov = cor_ma, sample.nobs = n_hm)</code></pre>
+<p>We then extract the results.</p>
+<pre class="r"><code>lavaan::summary(fit_ideal, standardized = TRUE, header = FALSE)</code></pre>
+<pre><code>## 
+## Parameter Estimates:
+## 
+##   Information                                 Expected
+##   Information saturated (h1) model          Structured
+##   Standard errors                             Standard
+## 
+## Regressions:
+##                    Estimate  Std.Err  z-value  P(&gt;|z|)   Std.lv  Std.all
+##   pri_ris ~                                                             
+##     pri_con    (a)    0.620    0.009   72.186    0.000    0.620    0.620
+##   dis_int ~                                                             
+##     pri_con    (b)   -0.054    0.014   -3.944    0.000   -0.054   -0.054
+##     pri_ris    (d)   -0.170    0.014  -12.428    0.000   -0.170   -0.170
+##   dis_beh ~                                                             
+##     pri_con    (c)    0.089    0.012    7.381    0.000    0.089    0.089
+##     pri_ris    (e)   -0.124    0.012  -10.132    0.000   -0.124   -0.124
+##     dis_int    (f)    0.476    0.010   49.019    0.000    0.476    0.476
+## 
+## Variances:
+##                    Estimate  Std.Err  z-value  P(&gt;|z|)   Std.lv  Std.all
+##    .pri_ris           0.616    0.010   64.595    0.000    0.616    0.616
+##    .dis_int           0.957    0.015   64.595    0.000    0.957    0.957
+##    .dis_beh           0.753    0.012   64.595    0.000    0.753    0.753
+## 
+## Defined Parameters:
+##                    Estimate  Std.Err  z-value  P(&gt;|z|)   Std.lv  Std.all
+##     indirect_ffcts   -0.152    0.009  -16.468    0.000   -0.152   -0.152
+##     direct_effect     0.089    0.012    7.381    0.000    0.089    0.089
+##     total_effect     -0.063    0.011   -5.767    0.000   -0.063   -0.063</code></pre>
+<p>The results show that the total effect equals the sum of the indirect effects and the direct effects. The total effect also equals the bivariate correlation reported above.</p>
+</div>
+<div id="model-reported-in-paper" class="section level1">
+<h1>Model Reported in Paper</h1>
+<p>Referring to Problem 2, we rebuild the model reported in the paper, called <code>model_reported</code>.</p>
+<pre class="r"><code>model_reported &lt;- &quot;
   pri_con ~~ pri_ris
   dis_int ~ pri_con + pri_ris
   dis_beh ~ pri_ris + dis_int
 &quot;
-fit_reported &lt;- lavaan::sem(model, sample.cov = cor_ma, sample.nobs = n_hm)</code></pre>
+fit_reported &lt;- lavaan::sem(model_reported, sample.cov = cor_ma, sample.nobs = n_hm)</code></pre>
 <p>The model shows the following fit:</p>
 <pre class="r"><code>fit_indices &lt;- c(&quot;chisq&quot;, &quot;df&quot;, &quot;pvalue&quot;, &quot;cfi&quot;, &quot;nfi&quot;, &quot;rmsea&quot;, &quot;rmsea.ci.lower&quot;, &quot;rmsea.ci.upper&quot;, &quot;srmr&quot;)
 lavaan::fitMeasures(fit_reported, fit_indices)</code></pre>
@@ -367,13 +417,13 @@ lavaan::fitMeasures(fit_reported, fit_indices)</code></pre>
 </div>
 <div id="analysis-of-saturated-model" class="section level1">
 <h1>Analysis of Saturated Model</h1>
-<p>We now estimate the saturated model by adding <code>pri_con</code> as predictor for <code>dis_beh</code>.</p>
-<pre class="r"><code>model &lt;- &quot;
+<p>We now estimate the saturated model (<code>model_saturated</code>) by adding <code>pri_con</code> as predictor for <code>dis_beh</code>.</p>
+<pre class="r"><code>model_saturated &lt;- &quot;
   pri_con ~~ pri_ris
   dis_int ~ pri_con + pri_ris
   dis_beh ~ pri_con + pri_ris + dis_int
 &quot;
-fit_saturated &lt;- lavaan::sem(model, sample.cov = cor_ma, sample.nobs = n_hm)</code></pre>
+fit_saturated &lt;- lavaan::sem(model_saturated, sample.cov = cor_ma, sample.nobs = n_hm)</code></pre>
 <p>The model shows the following fit:</p>
 <pre class="r"><code>lavaan::fitMeasures(fit_saturated, fit_indices)</code></pre>
 <pre><code>##          chisq             df         pvalue            cfi            nfi 
