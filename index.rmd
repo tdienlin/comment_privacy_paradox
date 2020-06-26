@@ -34,33 +34,11 @@ n_hm <- psych::harmonic.mean(n_c)
 n_hm
 ```
 
-# Ideal Model
+# Reported Model
 
-Referring to Problem 1, we first calculate our so-called `model_ideal`.
+Referring to Problem 2, we rebuild the model reported in the paper.
 
-```{r}
-model_ideal <- "
-  pri_ris ~ a * pri_con 
-  dis_int ~ b * pri_con + d * pri_ris
-  dis_beh ~ c * pri_con + e * pri_ris + f * dis_int
-  indirect_effects := (a*d*f) + (a*e) + (b*f)
-  direct_effect := c
-  total_effect := indirect_effects + direct_effect
-"
-fit_ideal <- lavaan::sem(model_ideal, sample.cov = cor_ma, sample.nobs = n_hm)
-```
-
-We then extract the results.
-
-```{r}
-lavaan::summary(fit_ideal, standardized = TRUE, header = FALSE, ci = TRUE)
-```
-
-The results show that the total effect equals the sum of the indirect effects and the direct effects. The total effect also equals the bivariate correlation reported above.
-
-# Model Reported in Paper
-
-Referring to Problem 2, we rebuild the model reported in the paper, called `model_reported`.
+![](figures/model_reported.png)
 
 ```{r}
 model_reported <- "
@@ -78,7 +56,9 @@ fit_indices <- c("chisq", "df", "pvalue", "cfi", "nfi", "rmsea", "srmr")
 lavaan::fitMeasures(fit_reported, fit_indices)
 ```
 
-The results equal those reported in the paper (with the exception that in the paper RMSEA is falsely reported as .008, which seems to be a typo). Also note that there is one degree of freedom, because the path `pri_con` on `dis_beh` is not included.
+The results equal those reported in the paper (with the exception that in the paper RMSEA is falsely reported as .008, which seems to be a typo). 
+
+Note that there is one degree of freedom, because the path `pri_con` on `dis_beh` is not included.
 
 We then look at the results of the structural model.
 
@@ -88,9 +68,11 @@ lavaan::summary(fit_reported, standardized = TRUE, header = FALSE)
 
 The results resemble exactly those reported in the paper.
 
-# Analysis of Saturated Model
+# Saturated Model
 
-We now estimate the saturated model (`model_saturated`) by adding `pri_con` as predictor for `dis_beh`. 
+We now estimate the saturated model by adding `pri_con` as predictor for `dis_beh`. 
+
+![](figures/model_saturated.png)
 
 ```{r}
 model_saturated <- "
@@ -120,6 +102,35 @@ We even find a _positive_ relation between privacy concerns and disclosure behav
 However, this finding shouldn't be surprising: Because privacy concern and privacy risks are strongly correlated (_r_ = `r cor_ma["pri_con", "pri_ris"]`), we have a situation typical of _multicollinearity._ That is, if strongly correlated predictors are included in the same model, confidence intervals increase, and oftentimes signs reverse (as is the case here). 
 
 This isn't even necessary problematic, but reflects are more difficult to interpret model and less statistical power [see @vanhoveCollinearityIsnDisease2019].
+
+# Preferred Model
+
+We then configure a new preferred model.
+
+![](figures/model_preferred.png)
+
+```{r}
+model_preferred <- "
+  pri_ris ~ a * pri_con 
+  dis_int ~ b * pri_con + d * pri_ris
+  dis_beh ~ c * pri_con + e * pri_ris + f * dis_int
+  indirect_effects := (a*d*f) + (a*e) + (b*f)
+  direct_effect := c
+  total_effect := indirect_effects + direct_effect
+  effect_pri_ris := (d*f) + e
+"
+fit_preferred <- lavaan::sem(model_preferred, sample.cov = cor_ma, sample.nobs = n_hm)
+```
+
+We extract the results.
+
+```{r}
+lavaan::summary(fit_preferred, standardized = TRUE, header = FALSE, ci = TRUE)
+```
+
+The results show that the total effect equals the sum of the indirect effects and the direct effects. The total effect also equals the bivariate correlation reported above.
+
+![](figures/model_preferred_results.png)
 
 # References
 

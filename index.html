@@ -398,55 +398,10 @@ n_hm &lt;- psych::harmonic.mean(n_c)
 n_hm</code></pre>
 <pre><code>## [1] 8345.094</code></pre>
 </div>
-<div id="ideal-model" class="section level1">
-<h1>Ideal Model</h1>
-<p>Referring to Problem 1, we first calculate our so-called <code>model_ideal</code>.</p>
-<pre class="r"><code>model_ideal &lt;- &quot;
-  pri_ris ~ a * pri_con 
-  dis_int ~ b * pri_con + d * pri_ris
-  dis_beh ~ c * pri_con + e * pri_ris + f * dis_int
-  indirect_effects := (a*d*f) + (a*e) + (b*f)
-  direct_effect := c
-  total_effect := indirect_effects + direct_effect
-&quot;
-fit_ideal &lt;- lavaan::sem(model_ideal, sample.cov = cor_ma, sample.nobs = n_hm)</code></pre>
-<p>We then extract the results.</p>
-<pre class="r"><code>lavaan::summary(fit_ideal, standardized = TRUE, header = FALSE, ci = TRUE)</code></pre>
-<pre><code>## 
-## Parameter Estimates:
-## 
-##   Information                                 Expected
-##   Information saturated (h1) model          Structured
-##   Standard errors                             Standard
-## 
-## Regressions:
-##                    Estimate  Std.Err  z-value  P(&gt;|z|) ci.lower ci.upper   Std.lv  Std.all
-##   pri_ris ~                                                                               
-##     pri_con    (a)    0.620    0.009   72.186    0.000    0.603    0.637    0.620    0.620
-##   dis_int ~                                                                               
-##     pri_con    (b)   -0.054    0.014   -3.944    0.000   -0.081   -0.027   -0.054   -0.054
-##     pri_ris    (d)   -0.170    0.014  -12.428    0.000   -0.196   -0.143   -0.170   -0.170
-##   dis_beh ~                                                                               
-##     pri_con    (c)    0.089    0.012    7.381    0.000    0.066    0.113    0.089    0.089
-##     pri_ris    (e)   -0.124    0.012  -10.132    0.000   -0.148   -0.100   -0.124   -0.124
-##     dis_int    (f)    0.476    0.010   49.019    0.000    0.457    0.495    0.476    0.476
-## 
-## Variances:
-##                    Estimate  Std.Err  z-value  P(&gt;|z|) ci.lower ci.upper   Std.lv  Std.all
-##    .pri_ris           0.616    0.010   64.595    0.000    0.597    0.634    0.616    0.616
-##    .dis_int           0.957    0.015   64.595    0.000    0.928    0.986    0.957    0.957
-##    .dis_beh           0.753    0.012   64.595    0.000    0.730    0.776    0.753    0.753
-## 
-## Defined Parameters:
-##                    Estimate  Std.Err  z-value  P(&gt;|z|) ci.lower ci.upper   Std.lv  Std.all
-##     indirect_ffcts   -0.152    0.009  -16.468    0.000   -0.171   -0.134   -0.152   -0.152
-##     direct_effect     0.089    0.012    7.381    0.000    0.066    0.113    0.089    0.089
-##     total_effect     -0.063    0.011   -5.767    0.000   -0.084   -0.042   -0.063   -0.063</code></pre>
-<p>The results show that the total effect equals the sum of the indirect effects and the direct effects. The total effect also equals the bivariate correlation reported above.</p>
-</div>
-<div id="model-reported-in-paper" class="section level1">
-<h1>Model Reported in Paper</h1>
-<p>Referring to Problem 2, we rebuild the model reported in the paper, called <code>model_reported</code>.</p>
+<div id="reported-model" class="section level1">
+<h1>Reported Model</h1>
+<p>Referring to Problem 2, we rebuild the model reported in the paper.</p>
+<p><img src="figures/model_reported.png" /></p>
 <pre class="r"><code>model_reported &lt;- &quot;
   pri_con ~~ pri_ris
   dis_int ~ pri_con + pri_ris
@@ -458,7 +413,8 @@ fit_reported &lt;- lavaan::sem(model_reported, sample.cov = cor_ma, sample.nobs 
 lavaan::fitMeasures(fit_reported, fit_indices)</code></pre>
 <pre><code>##  chisq     df pvalue    cfi    nfi  rmsea   srmr 
 ## 54.307  1.000  0.000  0.992  0.992  0.080  0.017</code></pre>
-<p>The results equal those reported in the paper (with the exception that in the paper RMSEA is falsely reported as .008, which seems to be a typo). Also note that there is one degree of freedom, because the path <code>pri_con</code> on <code>dis_beh</code> is not included.</p>
+<p>The results equal those reported in the paper (with the exception that in the paper RMSEA is falsely reported as .008, which seems to be a typo).</p>
+<p>Note that there is one degree of freedom, because the path <code>pri_con</code> on <code>dis_beh</code> is not included.</p>
 <p>We then look at the results of the structural model.</p>
 <pre class="r"><code>lavaan::summary(fit_reported, standardized = TRUE, header = FALSE)</code></pre>
 <pre><code>## 
@@ -490,9 +446,10 @@ lavaan::fitMeasures(fit_reported, fit_indices)</code></pre>
 ##     pri_ris           1.000    0.015   64.595    0.000    1.000    1.000</code></pre>
 <p>The results resemble exactly those reported in the paper.</p>
 </div>
-<div id="analysis-of-saturated-model" class="section level1">
-<h1>Analysis of Saturated Model</h1>
-<p>We now estimate the saturated model (<code>model_saturated</code>) by adding <code>pri_con</code> as predictor for <code>dis_beh</code>.</p>
+<div id="saturated-model" class="section level1">
+<h1>Saturated Model</h1>
+<p>We now estimate the saturated model by adding <code>pri_con</code> as predictor for <code>dis_beh</code>.</p>
+<p><img src="figures/model_saturated.png" /></p>
 <pre class="r"><code>model_saturated &lt;- &quot;
   pri_con ~~ pri_ris
   dis_int ~ pri_con + pri_ris
@@ -537,6 +494,56 @@ fit_saturated &lt;- lavaan::sem(model_saturated, sample.cov = cor_ma, sample.nob
 <p>We even find a <em>positive</em> relation between privacy concerns and disclosure behavior.</p>
 <p>However, this finding shouldn’t be surprising: Because privacy concern and privacy risks are strongly correlated (<em>r</em> = 0.62), we have a situation typical of <em>multicollinearity.</em> That is, if strongly correlated predictors are included in the same model, confidence intervals increase, and oftentimes signs reverse (as is the case here).</p>
 <p>This isn’t even necessary problematic, but reflects are more difficult to interpret model and less statistical power <span class="citation">(see Vanhove 2019)</span>.</p>
+</div>
+<div id="preferred-model" class="section level1">
+<h1>Preferred Model</h1>
+<p>We then configure a new preferred model.</p>
+<p><img src="figures/model_preferred.png" /></p>
+<pre class="r"><code>model_preferred &lt;- &quot;
+  pri_ris ~ a * pri_con 
+  dis_int ~ b * pri_con + d * pri_ris
+  dis_beh ~ c * pri_con + e * pri_ris + f * dis_int
+  indirect_effects := (a*d*f) + (a*e) + (b*f)
+  direct_effect := c
+  total_effect := indirect_effects + direct_effect
+  effect_pri_ris := (d*f) + e
+&quot;
+fit_preferred &lt;- lavaan::sem(model_preferred, sample.cov = cor_ma, sample.nobs = n_hm)</code></pre>
+<p>We extract the results.</p>
+<pre class="r"><code>lavaan::summary(fit_preferred, standardized = TRUE, header = FALSE, ci = TRUE)</code></pre>
+<pre><code>## 
+## Parameter Estimates:
+## 
+##   Information                                 Expected
+##   Information saturated (h1) model          Structured
+##   Standard errors                             Standard
+## 
+## Regressions:
+##                    Estimate  Std.Err  z-value  P(&gt;|z|) ci.lower ci.upper   Std.lv  Std.all
+##   pri_ris ~                                                                               
+##     pri_con    (a)    0.620    0.009   72.186    0.000    0.603    0.637    0.620    0.620
+##   dis_int ~                                                                               
+##     pri_con    (b)   -0.054    0.014   -3.944    0.000   -0.081   -0.027   -0.054   -0.054
+##     pri_ris    (d)   -0.170    0.014  -12.428    0.000   -0.196   -0.143   -0.170   -0.170
+##   dis_beh ~                                                                               
+##     pri_con    (c)    0.089    0.012    7.381    0.000    0.066    0.113    0.089    0.089
+##     pri_ris    (e)   -0.124    0.012  -10.132    0.000   -0.148   -0.100   -0.124   -0.124
+##     dis_int    (f)    0.476    0.010   49.019    0.000    0.457    0.495    0.476    0.476
+## 
+## Variances:
+##                    Estimate  Std.Err  z-value  P(&gt;|z|) ci.lower ci.upper   Std.lv  Std.all
+##    .pri_ris           0.616    0.010   64.595    0.000    0.597    0.634    0.616    0.616
+##    .dis_int           0.957    0.015   64.595    0.000    0.928    0.986    0.957    0.957
+##    .dis_beh           0.753    0.012   64.595    0.000    0.730    0.776    0.753    0.753
+## 
+## Defined Parameters:
+##                    Estimate  Std.Err  z-value  P(&gt;|z|) ci.lower ci.upper   Std.lv  Std.all
+##     indirect_ffcts   -0.152    0.009  -16.468    0.000   -0.171   -0.134   -0.152   -0.152
+##     direct_effect     0.089    0.012    7.381    0.000    0.066    0.113    0.089    0.089
+##     total_effect     -0.063    0.011   -5.767    0.000   -0.084   -0.042   -0.063   -0.063
+##     effect_pri_ris   -0.205    0.014  -14.886    0.000   -0.232   -0.178   -0.205   -0.205</code></pre>
+<p>The results show that the total effect equals the sum of the indirect effects and the direct effects. The total effect also equals the bivariate correlation reported above.</p>
+<p><img src="figures/model_preferred_results.png" /></p>
 </div>
 <div id="references" class="section level1 unnumbered">
 <h1>References</h1>
