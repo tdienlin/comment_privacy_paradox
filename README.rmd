@@ -38,7 +38,7 @@ n_hm
 
 Referring to Problem 2, we rebuild the model reported in the paper.
 
-![](figures/model_reported.png)
+<img src="figures/model_reported.png">
 
 ```{r}
 model_reported <- "
@@ -72,7 +72,7 @@ The results resemble exactly those reported in the paper.
 
 We now estimate the saturated model by adding `pri_con` as predictor for `dis_beh`. 
 
-![](figures/model_saturated.png)
+<img src="figures/model_saturated.png">
 
 ```{r}
 model_saturated <- "
