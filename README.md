@@ -4,6 +4,7 @@ Response to Yu et al. (2020)
   - [Set-up](#set-up)
   - [Reported Model](#reported-model)
   - [Saturated Model](#saturated-model)
+  - [Literature](#literature)
 
 In what follows, we reanalyze the study by Yu et al. (2020).
 
@@ -180,6 +181,8 @@ intervals increase, and oftentimes signs reverse (as is the case here).
 
 This isn’t even necessary problematic, but reflects are more difficult
 to interpret model and less statistical power (see Vanhove 2019).
+
+# Literature
 
 <div id="refs" class="references">
 
