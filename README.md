@@ -1,4 +1,4 @@
-Response to Yu et al. (2020)
+Comment on Yu et al. (2020)
 ================
 
   - [Set-up](#set-up)
@@ -16,7 +16,7 @@ In what follows, we reanalyze the study by Yu et al. (2020).
 ``` r
 options(width = 130) # set output pagewidth
 set.seed (190819)  # set seed 
-library(tidyverse); library(bain)  # load packages
+library(bain); library(lavaan); library(tidyverse)  # load packages
 ```
 
 We first recreate the covariance matrix reported by Yu et al. (2020).
@@ -24,7 +24,7 @@ We first recreate the covariance matrix reported by Yu et al. (2020).
 ``` r
 vars <- c("pri_ris", "pri_con", "dis_int", "dis_beh")
 cor_c <- c(1, .62, -.203, -.165, 1, -.159, -.063, 1, .487, 1)
-cor_ma <- lavaan::lav_matrix_vech_reverse(cor_c, diagonal = TRUE)
+cor_ma <- lav_matrix_vech_reverse(cor_c, diagonal = TRUE)
 colnames(cor_ma) <- vars
 rownames(cor_ma) <- vars
 cor_ma
@@ -59,14 +59,14 @@ model_reported <- "
   dis_int ~ pri_con + pri_ris
   dis_beh ~ pri_ris + dis_int
 "
-fit_reported <- lavaan::sem(model_reported, sample.cov = cor_ma, sample.nobs = n_hm)
+fit_reported <- sem(model_reported, sample.cov = cor_ma, sample.nobs = n_hm)
 ```
 
 The model shows the following fit:
 
 ``` r
 fit_indices <- c("chisq", "df", "pvalue", "cfi", "nfi", "rmsea", "srmr")
-lavaan::fitMeasures(fit_reported, fit_indices)
+fitMeasures(fit_reported, fit_indices)
 ```
 
     ##  chisq     df pvalue    cfi    nfi  rmsea   srmr 
@@ -81,7 +81,7 @@ Note that there is one degree of freedom, because the path `pri_con` on
 We then look at the results of the structural model.
 
 ``` r
-lavaan::summary(fit_reported, standardized = TRUE, header = FALSE)
+summary(fit_reported, standardized = TRUE, header = FALSE)
 ```
 
     ## 
@@ -127,13 +127,13 @@ model_saturated <- "
   dis_int ~ pri_con + pri_ris
   dis_beh ~ pri_con + pri_ris + dis_int
 "
-fit_saturated <- lavaan::sem(model_saturated, sample.cov = cor_ma, sample.nobs = n_hm)
+fit_saturated <- sem(model_saturated, sample.cov = cor_ma, sample.nobs = n_hm)
 ```
 
 The model shows the following fit:
 
 ``` r
-lavaan::fitMeasures(fit_saturated, fit_indices)
+fitMeasures(fit_saturated, fit_indices)
 ```
 
     ##  chisq     df pvalue    cfi    nfi  rmsea   srmr 
@@ -147,7 +147,7 @@ get “perfect” fit.
 We then look at the results of the structural model.
 
 ``` r
-lavaan::summary(fit_saturated, standardized = TRUE, header = FALSE, ci = TRUE)
+summary(fit_saturated, standardized = TRUE, header = FALSE, ci = TRUE)
 ```
 
     ## 
@@ -202,15 +202,17 @@ used to test support for the null hypothesis.
 # make table with data
 d_plot <- tribble(
   ~name, ~type, ~Effect, ~ll, ~ul,
-  "Accept null region hypothesis", "Decision Rule", NA, -.03, .03, 
-  "Reject null region hypothesis", "Decision Rule", NA, -.15, -.09,
-  "Reject negative effect hypothesis", "Decision Rule", NA, -.03, .09,
-  "Suspend judgement", "Decision Rule", NA, -.08, -.02,
+  "1. Accept null region hypothesis", "Decision Rule", NA, -.03, .03, 
+  "2. Reject null region hypothesis", "Decision Rule", NA, -.15, -.09,
+  "3. Reject positive effect hypothesis", "Decision Rule", NA, -.09, .03,
+  "4. Suspend judgement", "Decision Rule", NA, -.08, .08,
   "Yu et al. (2020)", "Study", -.063, -.120, -.005,
   "Baruh et al. (2017)", "Study", -.13, -.18, -.07
 ) %>% 
-  mutate(name = factor(name, levels = name),
-         type = factor(type, levels = c("Study", "Decision Rule"))
+  mutate(
+    name = factor(name, levels = name),
+    name = fct_rev(name),
+    type = factor(type, levels = c("Decision Rule", "Study"))
          )
 
 # design plot
@@ -234,10 +236,10 @@ plot
 
 ## Bayes Factors
 
-### Dienes’ Bayes Factor
-
 We now compare the likelihood of competing hypotheses using Bayes
 factors.
+
+### Dienes’ Bayes Factor
 
 ``` r
 source("fun_bayes_factor.R")  # load bayes factor function
@@ -252,9 +254,7 @@ sample_k <- 44
 sample_sd <- sample_se * sqrt(sample_k)
 ```
 
-#### Theoretical Example
-
-We first hypothesize that there is a small relation between concerns and
+We hypothesize that there is a small relation between concerns and
 information sharing. We compare the likelihood of this hypothesis, hence
 our theory, to the null hypothesis, in light of our data.
 
@@ -277,7 +277,7 @@ Bf(se = sample_se, # note that this is an error in the script and should be "se"
     ## [1] 3.962048
 
 The results show that our theory is about 4 times more likely than the
-null-hypothesis. This provides substantial support for our theory and
+null-hypothesis. This provides moderate support for our theory and
 speaks against the null hypothesis.
 
 To test whether our formula is correct, we have entered the same
@@ -289,75 +289,39 @@ Calculator](%22www.lifesci.sussex.ac.uk/home/Zoltan_Dienes/inference/bayes_facto
 The results are exactly the same, which shows that our function is
 correct.
 
-#### Empirical Example
+### Van Lissa’s BAIN
 
-We then take the data from Baruh et al. as our theory in assessing how
-large the relation between concerns and information sharing should be.
+We can also compute the Bayes factor for informed hypotheses using Van
+Lessa’s BAIN package.
 
-``` r
-# example empirical (Baruh et al. 2017)
-baruh_r <- -.13
-baruh_ll <- -.07
-baruh_se <- (baruh_r - baruh_ll) / 1.96
-baruh_n <- 37
-baruh_sd <- baruh_se * sqrt(baruh_n)
-baruh_sd <- baruh_r/2 * -1
-
-Bf(se = sample_se, 
-   obtained = sample_r,
-   uniform = 0,
-   meanoftheory = baruh_r,
-   sdtheory = baruh_sd,
-   tail = 2)
-```
-
-    ## $LikelihoodTheory
-    ## [1] 3.597161
-    ## 
-    ## $Likelihoodnull
-    ## [1] 1.41425
-    ## 
-    ## $BayesFactor
-    ## [1] 2.543512
-
-Our theory is about 2-3 times as likely as the Null hypothesis.
-
-### Van Lessa’s BAIN
-
-We can also compute the bayes factor using Van Lessa’s BAIN package (not
-reported in paper).
-
-In what follows, we compare H1: Effects are smaller than |-.05| (privacy
-paradox) with H2: Effects are larger than |-.05| (theory).
+In what follows, we compare H1: *r* \< -.05 (no privacy paradox) with
+its complement H2: *r* ≥ -.05 (privacy paradox).
 
 ``` r
 model_bf <- "
   dis_beh ~ pri_con
 "
-fit_bf <- lavaan::sem(model_bf, sample.cov = cor_ma, sample.nobs = n_hm)
-hypotheses_1 <- "dis_beh~pri_con > -.05;
-                 dis_beh~pri_con < -.05"
-bain(fit_bf, hypotheses_1)
+fit_bf <- sem(model_bf, sample.cov = cor_ma, sample.nobs = n_hm)
+
+hypothesis_1 <- "
+  dis_beh~pri_con < -.05;
+"
+bain(fit_bf, hypothesis_1)
 ```
 
     ## Bayesian informative hypothesis testing for an object of class lavaan:
     ## 
     ##    Fit   Com   BF.u  BF.c  PMPa  PMPb 
-    ## H1 0.117 0.500 0.234 0.133 0.117 0.078
-    ## H2 0.883 0.500 1.766 7.544 0.883 0.589
-    ## Hu                               0.333
+    ## H1 0.883 0.500 1.766 7.544 1.000 0.638
+    ## Hu                               0.362
     ## 
     ## Hypotheses:
-    ##   H1: dis_beh~pri_con>-.05
-    ##   H2: dis_beh~pri_con<-.05
+    ##   H1: dis_beh~pri_con<-.05
     ## 
     ## Note: BF.u denotes the Bayes factor of the hypothesis at hand versus the unconstrained hypothesis Hu. BF.c denotes the Bayes factor of the hypothesis at hand versus its complement.
 
-The hypothesis that effects are larger than |.05| is more than 7-times
-more likely than the hypothesis that effects are smaller than |.05|.
-
-In other words, given the data from Yu et al, our theory is more likely
-than the privacy paradox.
+H1 (no privacy paradox) is more than 7-times more likely than the H2
+(privacy paradox) (see “BF.c”).
 
 # Literature
 
