@@ -282,7 +282,7 @@ To test whether our formula is correct, we have entered the same
 information in Dienes’ [Bayes Factor
 Calculator](%22www.lifesci.sussex.ac.uk/home/Zoltan_Dienes/inference/bayes_factor.swf%22).
 
-<img src="figures/results_dienes_calculator.png">
+![](figures/results_dienes_calculator.png)
 
 The results are exactly the same, which shows that our function is
 correct.

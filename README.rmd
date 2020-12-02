@@ -2,8 +2,9 @@
 title: "Comment on Yu et al. (2020)"
 subtitle: "Supplementary Analyses"
 output: 
-  github_document:
   # pdf_document:
+  #   latex_engine: xelatex
+  github_document:
     toc: true
     toc_depth: 2
 bibliography: bibliography.bib
@@ -179,7 +180,7 @@ The results show that our theory is about 4 times more likely than the null-hypo
 
 To test whether our formula is correct, we have entered the same information in Dienes' [Bayes Factor Calculator]("www.lifesci.sussex.ac.uk/home/Zoltan_Dienes/inference/bayes_factor.swf"). 
 
-<img src="figures/results_dienes_calculator.png">
+![](figures/results_dienes_calculator.png)
 
 The results are exactly the same, which shows that our function is correct.
 
