@@ -19,14 +19,11 @@ set.seed (190819)  # set seed
 library(bain); library(lavaan); library(tidyverse)  # load packages
 ```
 
-We first recreate the covariance matrix reported by Yu et al. (2020).
+We first load the covariance matrix reported by Yu et al. (2020).
 
 ``` r
-vars <- c("pri_ris", "pri_con", "dis_int", "dis_beh")
-cor_c <- c(1, .62, -.203, -.165, 1, -.159, -.063, 1, .487, 1)
-cor_ma <- lav_matrix_vech_reverse(cor_c, diagonal = TRUE)
-colnames(cor_ma) <- vars
-rownames(cor_ma) <- vars
+cor_ma <- read.csv("data_cor.csv", row.names = 1)
+cor_ma <- as.matrix(cor_ma)
 cor_ma
 ```
 
@@ -40,12 +37,13 @@ We then compute the harmonic mean given the sample sizes reported in the
 paper.
 
 ``` r
-n_c <- c(9611, 5152, 19062, 20013, 8229, 5079) # harmonic mean for n
+n_c <- read.csv("data_n.csv", row.names = 1)
 n_hm <- psych::harmonic.mean(n_c)
 n_hm
 ```
 
-    ## [1] 8345.094
+    ##        n 
+    ## 8345.094
 
 # Reported Model
 
